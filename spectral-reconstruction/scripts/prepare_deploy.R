@@ -5,10 +5,10 @@
 # sudo apt-get install libarchive-dev
 
 if (!requireNamespace("shinylive", quietly = TRUE)) {
-  install.packages("shinylive")
+    install.packages("shinylive")
 }
 if (!requireNamespace("httpuv", quietly = TRUE)) {
-  install.packages("httpuv")
+    install.packages("httpuv")
 }
 
 # 2. Export the app to the 'docs' directory
