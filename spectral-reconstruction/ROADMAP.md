@@ -1,7 +1,7 @@
 # Spectral Reconstruction Roadmap
 
 ## Goal
-Reconstruct hyperspectral data (400-1100nm, potentially extending to 2500nm) from multispectral observations using piecewise parametric models.
+Reconstruct hyperspectral data (400-1100nm) from multispectral observations using piecewise parametric models.
 
 ## Phases
 

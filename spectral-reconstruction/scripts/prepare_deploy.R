@@ -1,22 +1,34 @@
 # Script to prepare the app for GitHub Pages deployment using shinylive
 
-# 1. Install required packages
-# Note: On Linux, you may need to install 'libarchive-dev' first:
-# sudo apt-get install libarchive-dev
-
+# 1. Install shinylive if needed
 if (!requireNamespace("shinylive", quietly = TRUE)) {
+    message("Installing shinylive...")
     install.packages("shinylive")
 }
-if (!requireNamespace("httpuv", quietly = TRUE)) {
-    install.packages("httpuv")
-}
 
-# 2. Export the app to the 'docs' directory
-# This compiles the app to WebAssembly-ready static files
-shinylive::export(appdir = ".", destdir = "docs")
+# 2. Create a temporary staging directory
+# This ensures we only deploy the necessary files, not the whole project (like .git, output, etc.)
+staging_dir <- "app_staging"
+if (dir.exists(staging_dir)) unlink(staging_dir, recursive = TRUE)
+dir.create(staging_dir)
 
-# 3. Test locally (optional)
-# httpuv::runStaticServer("docs")
+# 3. Copy essential files to staging
+file.copy("app.R", staging_dir)
+file.copy("DESCRIPTION", staging_dir)
 
-message("App exported to 'docs/' directory.")
-message("Now push the changes to GitHub and enable GitHub Pages for the /docs folder.")
+dir.create(file.path(staging_dir, "R"))
+file.copy(list.files("R", full.names = TRUE), file.path(staging_dir, "R"))
+
+dir.create(file.path(staging_dir, "data"))
+file.copy(list.files("data", full.names = TRUE), file.path(staging_dir, "data"))
+
+message("Files copied to staging area.")
+
+# 4. Export to docs/
+if (dir.exists("docs")) unlink("docs", recursive = TRUE)
+shinylive::export(appdir = staging_dir, destdir = "docs")
+
+# 5. Cleanup
+unlink(staging_dir, recursive = TRUE)
+
+message("Success! App exported to 'docs/'.")
