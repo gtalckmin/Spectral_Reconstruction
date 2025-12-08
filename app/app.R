@@ -6,7 +6,11 @@ library(tibble)
 library(pracma)
 
 # Load data and model
-load("data/prosail_data.RData")
+if (file.exists("data/prosail_data.RData")) {
+  load("data/prosail_data.RData")
+} else {
+  stop("Required data file 'data/prosail_data.RData' not found. Please ensure it is included in the deployment.")
+}
 source("R/reconstruction_model.R")
 
 # Define UI

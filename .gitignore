@@ -8,6 +8,7 @@
 *.pdf
 *.RData
 !data/prosail_data.RData
+!app/data/prosail_data.RData
 
 # Directories
 app_staging/
