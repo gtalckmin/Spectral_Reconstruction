@@ -1,0 +1,14 @@
+# R
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# Files
+*.pdf
+*.RData
+!data/prosail_data.RData
+
+# Directories
+app_staging/
+output/
