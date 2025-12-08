@@ -7,7 +7,7 @@ library(pracma)
 
 # Load data and model
 load("data/prosail_data.RData")
-# source("R/reconstruction_model.R") # Shiny auto-sources files in R/ directory
+source("R/reconstruction_model.R")
 
 # Define UI
 ui <- fluidPage(
