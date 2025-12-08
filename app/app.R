@@ -1,6 +1,8 @@
 library(shiny)
 library(ggplot2)
-library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(tibble)
 library(pracma)
 
 # Load data and model
