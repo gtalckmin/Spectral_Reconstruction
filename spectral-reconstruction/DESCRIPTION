@@ -1,0 +1,8 @@
+Title: Spectral Reconstruction App
+Author: User
+Description: A Shiny app for spectral reconstruction analysis.
+Imports: 
+    shiny,
+    ggplot2,
+    tidyverse,
+    pracma
