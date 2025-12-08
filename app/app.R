@@ -66,7 +66,7 @@ server <- function(input, output) {
         names(obs_spectrum) <- paste0("R", wavelengths)
 
         # Reconstruct
-        res <- reconstruct_spectrum(obs_spectrum, wavelengths)
+        res <- reconstruct_spec_parametric(obs_spectrum, wavelengths)
 
         list(
             obs = obs_spectrum,
@@ -133,12 +133,12 @@ server <- function(input, output) {
 
             data.frame(
                 Parameter = c(
-                    "A (Chl)", "Sigma (Chl)", "A (Blue)", "Sigma (Blue)",
-                    "Lambda_i", "C (Slope)", "A (Water)", "Sigma (Water)", "AUC (NIR)"
+                    "A (Chl)", "Sigma (Chl)",
+                    "Lambda_i", "C (Slope)", "AUC (NIR)"
                 ),
                 Value = sprintf("%.4f", c(
-                    feats$A, feats$sigma, feats$A_blue, feats$sigma_blue,
-                    feats$lambda_i, feats$C, feats$A_water, feats$sigma_water, feats$AUC
+                    feats$A, feats$sigma,
+                    feats$lambda_i, feats$C, feats$AUC
                 ))
             )
         },
