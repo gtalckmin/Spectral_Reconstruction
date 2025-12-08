@@ -29,6 +29,7 @@ jobs:
       - name: Export app to docs
         run: |
           Rscript -e "shinylive::export('app', 'docs')"
+          touch docs/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
