@@ -5,6 +5,9 @@ library(tidyr)
 library(tibble)
 library(pracma)
 
+# Declare globals to avoid R CMD check / lint notes for Shiny reactive bindings
+utils::globalVariables(c("wavelengths", "spectra_mat", "WL", "Reflectance", "Type", "Error"))
+
 # Load data and model
 if (file.exists("data/prosail_data.RData")) {
     load("data/prosail_data.RData")
@@ -191,7 +194,7 @@ server <- function(input, output) {
             }
 
             # sigma_blue fixed (cannot be robustly estimated from sparse anchors)
-            sigma_blue <- 20
+            # sigma_blue is fixed (not used in cost computation here)
 
             # --- derive sigma_water from anchor-based amplitudes ---
             slope_nir <- (obs_anchors["R1100"] - obs_anchors["R780"]) / (1100 - 780)
@@ -239,7 +242,7 @@ server <- function(input, output) {
         } else {
             sigma_red_est <- sqrt((700 - 670)^2 / (-2 * log(ratio)))
         }
-        sigma_blue <- 20
+        # sigma_blue is fixed (handled inside reconstruct_optimized)
         slope_nir <- (obs_anchors["R1100"] - obs_anchors["R780"]) / (1100 - 780)
         int_nir <- obs_anchors["R780"] - slope_nir * 780
         base_nir <- function(l) slope_nir * l + int_nir
