@@ -262,9 +262,24 @@ Please install them with: install.packages(c('hsdar','e1071','tibble')) or via d
         inversion_status()
     })
 
-    # Try to auto-load demo model from `models/` if present
-    default_model_path <- "models/prosail_inversion_fwhm-10_seed-123_nlut-1000.rds"
-    if (file.exists(default_model_path)) {
+    # Try to auto-load demo model from multiple candidate paths
+    model_candidates <- c(
+        "models/prosail_inversion_fwhm-10_seed-123_nlut-1000.rds",
+        file.path("..", "models", "prosail_inversion_fwhm-10_seed-123_nlut-1000.rds"),
+        file.path("app", "models", "prosail_inversion_fwhm-10_seed-123_nlut-1000.rds")
+    )
+
+    find_default_model <- function() {
+        for (candidate in model_candidates) {
+            if (file.exists(candidate)) {
+                return(candidate)
+            }
+        }
+        NULL
+    }
+
+    default_model_path <- find_default_model()
+    if (!is.null(default_model_path)) {
         tryCatch(
             {
                 inv0 <- load_prosail_inversion(default_model_path)
