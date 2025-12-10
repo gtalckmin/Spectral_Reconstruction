@@ -19,22 +19,6 @@ if (file.exists("data/prosail_data.RData")) {
 # Source existing model for "Default" reconstruction
 if (file.exists("R/reconstruction_model.R")) source("R/reconstruction_model.R")
 
-# Try to load precomputed reconstructions (for GitHub Pages / shinylive)
-precomputed_data <- NULL
-precomp_paths <- c(
-    "app/data/optimized_reconstructions.json",
-    "data/optimized_reconstructions.json",
-    "docs/data/optimized_reconstructions.json",
-    "optimized_reconstructions.json"
-)
-for (pp in precomp_paths) {
-    if (file.exists(pp)) {
-        precomputed_data <- jsonlite::fromJSON(pp)
-        message("Loaded precomputed reconstructions from:", pp)
-        break
-    }
-}
-
 # --- Extended Model for Optimization (Internal) ---
 # This implements the "New" model with Blue and Water absorption terms
 reconstruct_optimized <- function(obs_anchors, wl, params) {
@@ -127,7 +111,6 @@ ui <- fluidPage(
                 min = 1, max = nrow(spectra_mat), value = 1, step = 1
             ),
             hr(),
-            uiOutput("mode_badge"),
             h4("Optimized Parameters"),
             tableOutput("params_table"),
             hr(),
@@ -181,14 +164,6 @@ server <- function(input, output) {
 
         # 1. Default Reconstruction (Old Model)
         res_def <- reconstruct_spec_parametric(obs, wavelengths)
-
-        # If precomputed data is available, use it (no live optimization)
-        if (!is.null(precomputed_data)) {
-            # precomputed_data: list(wavelengths, spectra (list), params (list))
-            opt_spec <- as.numeric(precomputed_data$spectra[[idx]])
-            opt_params <- precomputed_data$params[[idx]]
-            return(list(obs = obs, def = res_def$spectrum, opt = opt_spec, params = opt_params))
-        }
 
         # 2. Optimization (New Model)
         # Prepare anchors
@@ -326,14 +301,6 @@ server <- function(input, output) {
                 text = element_text(size = 14)
             ) +
             labs(title = paste("Sample", input$sample_idx, "Reconstruction"), y = "Reflectance")
-    })
-
-    output$mode_badge <- renderUI({
-        if (!is.null(precomputed_data)) {
-            tags$div(style = "padding:6px; background:#eef; border-radius:4px;", strong("Mode:"), " Precomputed data (no client optimization)")
-        } else {
-            tags$div(style = "padding:6px; background:#efe; border-radius:4px;", strong("Mode:"), " Live optimization")
-        }
     })
 
     # Error Plot
