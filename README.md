@@ -10,11 +10,11 @@ This repository hosts a Shiny application for reconstructing hyperspectral signa
 2. **Method 2: PROSAIL Inversion (hybrid LUT + SVM)**
    - Builds a PROSAIL LUT sampled over key biophysical parameters (N, Cab, Car, Cw, LAI, psoil) and converts those spectra to the multispectral anchor bands via 10 nm Gaussian SRFs.
    - Trains one Support Vector Regression (SVR) model per PROSAIL parameter using the convolved band responses.
-   - At runtime the Shiny app loads a pretrained `.rds` inversion model, convolves the selected sample to the same multispectral bands, predicts the PROSAIL parameters, runs PROSAIL forward, and displays the 400–1100 nm spectral curve.
+   - At runtime the Shiny app auto-loads the pretrained `.rds` inversion model (falling back to the upload control if loading fails), convolves the selected sample to the same multispectral bands, predicts the PROSAIL parameters, runs PROSAIL forward, and displays the 400–1100 nm spectral curve.
 
 ## Data and Pretrained Model
 - `data/prosail_data.RData` contains the reference dataset used by Method 1 (observed spectra, wavelength axis, and parameter table).
-- `models/prosail_inversion_fwhm-10_seed-123_nlut-1000.rds` is the pretrained PROSAIL inversion model (n_lut=1000, fwhm=10). The Shiny app auto-loads this file if it exists.
+- `models/prosail_inversion_fwhm-10_seed-123_nlut-1000.rds` is the pretrained PROSAIL inversion model (n_lut=1000, fwhm=10). The Shiny app tries to auto-load this file from any of the supported relative paths in order (`models/`, `../models/`, `app/models/`) and exposes the upload input only if auto-load fails.
 
 ## Running the App
 1. Ensure dependencies are installed (R packages `shiny`, `ggplot2`, `dplyr`, `tidyr`, `tibble`, `pracma`, `e1071`, `hsdar`).
@@ -27,14 +27,14 @@ This repository hosts a Shiny application for reconstructing hyperspectral signa
    - **Method 2**: The pretrained PROSAIL inversion model is auto-loaded. Select a sample index and click *Run PROSAIL inversion* to compare the observed hyperspectral curve against the PROSAIL (SVR) prediction, inspect estimated PROSAIL parameters, and view band-wise residuals.
 
 ## Building or Retraining the PROSAIL Inversion Model
-If you want to retrain the inversion model with more samples or different seeds:
+If you want to retrain the inversion model for higher fidelity or new parameter ranges:
 1. Install the same R dependencies plus `hsdar` for PROSAIL.
 2. Run:
    ```bash
    Rscript scripts/build_prosail_inversion_model.R
    ```
-   This will generate `models/prosail_inversion_fwhm-10_seed-123_nlut-1000.rds`.
-3. Restart the Shiny app so it auto-loads the fresh model.
+   The script sources `R/prosail_inversion.R`, builds the LUT, trains the SVRs, and saves `models/prosail_inversion_fwhm-10_seed-123_nlut-1000.rds`.
+3. Restart the Shiny app so it auto-loads the updated `.rds`, then choose a sample index and click “Run PROSAIL inversion” to overlay the PROSAIL (SVR) curve on the reference spectrum.
 
 ## Repository Structure
 ```
