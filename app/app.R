@@ -79,7 +79,7 @@ ui <- fluidPage(
                     tags$div(tags$strong("FWHM (Gaussian)", ": 10 nm (fixed)")),
                     verbatimTextOutput("m2_model_seed"),
                     actionButton("run_m2", "Run PROSAIL inversion", class = "btn-primary"),
-                    fileInput("upload_m2_model", "Upload trained model (.rds):", accept = c(".rds")),
+                    uiOutput("m2_upload_ui"),
                     br(),
                     hr(),
                     helpText("SVM(Multispectral data) = PROSAIL parameters -> PROSAIL Forward = spectral signature."),
@@ -230,6 +230,11 @@ Please install them with: install.packages(c('hsdar','e1071','tibble')) or via d
     inversion_models <- reactiveVal(NULL)
     inversion_status <- reactiveVal("No PROSAIL model loaded. Upload a trained .rds model.")
 
+    # Render the upload UI by default; will switch to a "model loaded" message when a model is present
+    output$m2_upload_ui <- renderUI({
+        fileInput("upload_m2_model", "Upload trained model (.rds):", accept = c(".rds"))
+    })
+
     # Load uploaded trained inversion model (.rds) — training is offline
     observeEvent(input$upload_m2_model, {
         req(input$upload_m2_model)
@@ -241,6 +246,10 @@ Please install them with: install.packages(c('hsdar','e1071','tibble')) or via d
                 inversion_status(paste("Uploaded model loaded:", input$upload_m2_model$name))
                 output$m2_model_seed <- renderText({
                     if (!is.null(inv$seed)) as.character(inv$seed) else "NA"
+                })
+                # replace upload control with a compact loaded message
+                output$m2_upload_ui <- renderUI({
+                    tags$div(tags$strong("Loaded model:"), input$upload_m2_model$name)
                 })
             },
             error = function(e) {
@@ -263,6 +272,10 @@ Please install them with: install.packages(c('hsdar','e1071','tibble')) or via d
                 inversion_status(paste("Auto-loaded model:", basename(default_model_path)))
                 output$m2_model_seed <- renderText({
                     if (!is.null(inv0$seed)) as.character(inv0$seed) else "NA"
+                })
+                # replace upload control with a compact loaded message
+                output$m2_upload_ui <- renderUI({
+                    tags$div(tags$strong("Auto-loaded model:"), basename(default_model_path))
                 })
             },
             error = function(e) {
